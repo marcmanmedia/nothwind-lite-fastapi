@@ -13,3 +13,9 @@ def root():
 def health_check(db: Session = Depends(get_db)):
     db.execute(text("SELECT 1"))
     return {"status": "healthy"}
+
+@app.get("/sales")
+def get_employee_sales(db: Session = Depends(get_db)):
+    result = db.execute(text("SELECT * FROM vw_employee_sales"))
+    rows = result.fetchall()
+    return {"data": [dict(row._mapping) for row in rows]}
