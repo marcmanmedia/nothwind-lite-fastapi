@@ -15,12 +15,24 @@ app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Fake database
-fake_users_db = {
-    "admin": {
-        "username": "admin",
-        "hashed_password": hash_password("admin123")
-    }
-}
+
+#had re-design fake database user because it was causing serverless function issues
+#when hashing at import time. With this approach, dont hav to worry about hashing at import time.
+#hash runs only on first login request. Same hash reused for future requests (within that instance).
+# and it alos prevents the Verce cold start crash.
+
+fake_users_db = None
+
+def get_fake_users():
+    global fake_users_db
+    if fake_users_db is None:
+        fake_users_db = {
+            "admin": {
+                "username": "admin",
+                "hashed_password": hash_password("admin123")
+            }
+        }
+    return fake_users_db
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = verify_access_token(token)
@@ -54,7 +66,8 @@ def get_employee_sales(db: Session = Depends(get_db),current_user: dict = Depend
 
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = fake_users_db.get(form_data.username)
+    users_db = get_fake_users()
+    user = users_db.get(form_data.username)
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
