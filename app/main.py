@@ -16,10 +16,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Fake database
 
-#had re-design fake database user because it was causing serverless function issues
-#when hashing at import time. With this approach, dont hav to worry about hashing at import time.
-#hash runs only on first login request. Same hash reused for future requests (within that instance).
-# and it alos prevents the Verce cold start crash.
+#had to re-design fake database user because it will cause serverless function issues
+#when hashing at import time. With this approach, dont have to worry about hashing at import time.
+#hash will only run only on first login request. Same hash will bereused for future requests 
+# (within that instance). And it also prevents the Vercel cold start crash which can happen with the
+# free tier.
 
 fake_users_db = None
 
