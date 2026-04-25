@@ -16,7 +16,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "https://your-frontend-domain.vercel.app",
+    "https://northwind-lite-react.vercel.app",
 ]
 
 app.add_middleware(
